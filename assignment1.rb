@@ -1,100 +1,151 @@
 # Jack Tomkiel - Assignment 1
 require 'csv'
 
-def userMenu
-    loop do
-        puts "Welcome to the course management system!"
-        puts "1-input data from file"
-        puts "2-list course information"
-        puts "3-edit data"
-        puts "4-form groups"
-        puts "5-list groups"
-        puts "6-write groups to file"
-        puts "0-exit the program"  
+class ManagementSystem
 
-        userSelection = gets.chomp
+    def initialize
+        @studentArray = []
+        @selectedFile = ""
+        @dash = "-"*40
+    end
 
-        case userSelection
-        when "0"
-            abort
-        when "1"
-            inputData
-        when "2"
-            listCourseInfo
-        when "3"
-            # do this
-        when "4"
-            # do this
-        when "5"
-            # do this
-        when "6"
-            # do this
+    def userMenu
+            puts "Welcome to the course management system!"
+            puts "1-input data from file"
+            puts "2-edit data"
+            puts "3-form groups"
+            puts "4-list groups"
+            puts "5-write groups to file"
+            puts "6-view course information"
+            puts "0-exit the program"  
+            userSelection = gets.chomp
+                case userSelection
+                when "0"
+                    abort
+                when "1"
+                    inputData
+                when "2"
+                    editData
+                when "3"
+                    formGroups
+                when "4"
+                    # do this
+                when "5"
+                    # do this
+                when "6"
+                    listCourseInfo
+                else
+                    puts @dash+"error-invalid-selection"+@dash
+                    userMenu
+                end
+    end
+
+    def inputData
+        puts "Enter the name of the file that you wish to read:"
+        @selectedFile = gets.chomp
+        puts "The file to be read is \"#{@selectedFile}\" (y/n)?"
+        temp = gets.chomp
+        if  temp == "y"
+            @studentArray = CSV.read("#{@selectedFile}", :headers => true)
+            puts "File Loaded...Returning to menu"
+            userMenu
         else
-            puts "\nerror - invalid selection\n\n"
+            puts "Returning to menu..."
+            userMenu
         end
     end
-end
 
-def inputData
-    puts "Enter the name of the file that you wish to read:"
-    selectedFile = gets.chomp
-    puts "The file to be read is \"#{selectedFile}\" (y/n)?"
-    temp = gets.chomp
-    if  temp == "y"
-        puts "Opening file, please wait..."
-    else
-        puts "\nReturning to menu...\n\n"
+    def listCourseInfo
+        puts "There are #{@studentArray.size} students in this course"
+        puts "The Course roster is listed below"
+        puts @studentArray
+        puts "Press 'enter' to return to menu"
+        temp = gets.chomp
         userMenu
-        # puts "Exiting program ..."
-        # abort
     end
-    studentArray = CSV.read("#{selectedFile}", :headers => true)
-    # puts "There are #{studentArray.size} students in this course"
-    # puts "The Course roster is listed below"
-    # puts studentArray
+
+    def editData
+        puts "1-add student"
+        puts "2-delete student"
+        puts "3-edit student data"
+        userSelection = gets.chomp
+            case userSelection
+            when "1"
+                puts "Enter first_name:"
+                first_name = gets.chomp
+                puts "Enter last_name:"
+                last_name = gets.chomp
+                puts "Enter email:"
+                email = gets.chomp
+                puts "Enter section:"
+                section = gets.chomp
+                puts "Enter major1:"
+                major1 = gets.chomp
+                puts "Enter major2:"
+                major2 = gets.chomp
+                puts "Enter minor1:"
+                minor1 = gets.chomp
+                puts "Enter minor2:"
+                minor2 = gets.chomp
+                @studentArray.push([first_name,last_name,email,section,major1,major2,minor1,minor2])
+                userMenu
+            when "2"
+                puts "Enter the number of the student you would like to remove:"
+                studentNumber = gets.chomp.to_i
+                @studentArray.delete(studentNumber)
+                userMenu
+            when "3"
+                puts "Enter the number of the student you would like to edit:"
+                studentNumber = gets.chomp.to_i
+                puts "Enter first_name:"
+                first_name = gets.chomp
+                @studentArray[studentNumber][0] = first_name
+                puts "Enter last_name:"
+                last_name = gets.chomp
+                @studentArray[studentNumber][1] = last_name
+                puts "Enter email:"
+                email = gets.chomp
+                @studentArray[studentNumber][2] = email
+                puts "Enter section:"
+                section = gets.chomp
+                @studentArray[studentNumber][3] = section
+                puts "Enter major1:"
+                major1 = gets.chomp
+                @studentArray[studentNumber][4] = major1
+                puts "Enter major2:"
+                major2 = gets.chomp
+                @studentArray[studentNumber][5] = major2
+                puts "Enter minor1:"
+                minor1 = gets.chomp
+                @studentArray[studentNumber][6] = minor1
+                puts "Enter minor2:"
+                minor2 = gets.chomp
+                @studentArray[studentNumber][7] = minor2
+                userMenu
+            else
+                puts @dash+"error-invalid-selection"+@dash
+                userMenu
+            end
+    end
+
 end
 
-def listCourseInfo
-    puts "There are #{studentArray.size} students in this course"
-    puts "The Course roster is listed below"
-    puts studentArray
-end
-
-userMenu
+cm = ManagementSystem.new
+cm.userMenu
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-# desired_indices = [3, 4, 5].sort # these are rows you would like to modify
-# studentArray.each.with_index(desired_indices[0]) do |row, index| 
-#   if desired_indices.include?(index)
-
-#     # modify over here
-#     rows_array[index][target_column] = 'modification'
-
+# CSV.foreach("textfile.txt", headers: true) do |row|
+#     puts row.inspect # hash
 #   end
+
+# CSV.parse("textfile.txt", headers: true).map(&:to_h)
+
+# data_file = 'textfile.txt'
+# data = []
+# CSV.foreach(data_file, headers: true) do |row|
+#   data << row.to_hash
 # end
-
-# studentArray.each do |row1|
-#     puts row1.inspect
-# end
-
-
-
-
-# File.write("test.txt", studentArray.map(&:to_csv).join)
-
-
-
-
+# puts "#{data[0]["first_name"]}"
 
