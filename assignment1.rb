@@ -1,70 +1,67 @@
 # Jack Tomkiel - Assignment 1
 require 'csv'
 
-class ManagementSystem
+def userMenu
+    loop do
+        puts "Welcome to the course management system!"
+        puts "1-input data from file"
+        puts "2-list course information"
+        puts "3-edit data"
+        puts "4-form groups"
+        puts "5-list groups"
+        puts "6-write groups to file"
+        puts "0-exit the program"  
 
-    def userMenu
-        loop do
-            puts "Welcome to the course management system!"
-            puts "1-input data from file"
-            puts "2-list course information"
-            puts "3-edit data"
-            puts "4-form groups"
-            puts "5-list groups"
-            puts "6-write groups to file"
-            puts "0-exit the program"  
+        userSelection = gets.chomp
 
-            userSelection = gets.chomp
-
-            case userSelection
-            when "0"
-                abort
-            when "1"
-                inputData
-            when "2"
-                listCourseInfo
-            when "3"
-                # do this
-            when "4"
-                # do this
-            when "5"
-                # do this
-            when "6"
-                # do this
-            else
-                puts "\nerror - invalid selection\n\n"
-            end
-        end
-    end
-
-    def inputData
-        puts "Enter the name of the file that you wish to read:"
-        selectedFile = gets.chomp
-        puts "The file to be read is \"#{selectedFile}\" (y/n)?"
-        temp = gets.chomp
-        if  temp == "y"
-            puts "Opening file, please wait..."
+        case userSelection
+        when "0"
+            abort
+        when "1"
+            inputData
+        when "2"
+            listCourseInfo
+        when "3"
+            # do this
+        when "4"
+            # do this
+        when "5"
+            # do this
+        when "6"
+            # do this
         else
-            puts "\nReturning to menu...\n\n"
-            userMenu
-            # puts "Exiting program ..."
-            # abort
+            puts "\nerror - invalid selection\n\n"
         end
-        studentArray = CSV.read("#{selectedFile}", :headers => true)
-        # puts "There are #{studentArray.size} students in this course"
-        # puts "The Course roster is listed below"
-        # puts studentArray
     end
-
-    def listCourseInfo
-        puts "There are #{studentArray.size} students in this course"
-        puts "The Course roster is listed below"
-        puts studentArray
-    end
-
-    @@userMenu
-
 end
+
+def inputData
+    puts "Enter the name of the file that you wish to read:"
+    selectedFile = gets.chomp
+    puts "The file to be read is \"#{selectedFile}\" (y/n)?"
+    temp = gets.chomp
+    if  temp == "y"
+        puts "Opening file, please wait..."
+    else
+        puts "\nReturning to menu...\n\n"
+        userMenu
+        # puts "Exiting program ..."
+        # abort
+    end
+    studentArray = CSV.read("#{selectedFile}", :headers => true)
+    # puts "There are #{studentArray.size} students in this course"
+    # puts "The Course roster is listed below"
+    # puts studentArray
+end
+
+def listCourseInfo
+    puts "There are #{studentArray.size} students in this course"
+    puts "The Course roster is listed below"
+    puts studentArray
+end
+
+userMenu
+
 
 
 
