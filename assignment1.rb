@@ -56,7 +56,7 @@ class ManagementSystem
     end
 
     def listCourseInfo
-        puts "There are #{@studentArray.size} students in this course"
+        puts "There are #{@studentArray.length} students in this course"
         puts "The Course roster is listed below"
         puts @studentArray
         puts "Press 'enter' to return to menu"
@@ -90,12 +90,23 @@ class ManagementSystem
                 @studentArray.push([first_name,last_name,email,section,major1,major2,minor1,minor2])
                 userMenu
             when "2"
-                puts "Enter the number of the student you would like to remove:"
-                studentNumber = gets.chomp.to_i
-                @studentArray.delete(studentNumber)
+                puts "Enter the email of the student you would like to remove:"
+                studentEmail = gets.chomp
+                studentFound = false
+                puts @studentArray.length
+                for i in 0..@studentArray.length-1
+                    if @studentArray[i][2] == studentEmail
+                        studentFound = true
+                        @studentArray.delete(i)
+                        puts "Student removed"
+                    end
+                end
+                if !studentFound
+                    puts "Student not found"
+                end
                 userMenu
             when "3"
-                puts "Enter the number of the student you would like to edit:"
+                puts "Enter the number of the email of you would like to edit:"
                 studentNumber = gets.chomp.to_i
                 puts "Enter first_name:"
                 first_name = gets.chomp
@@ -128,6 +139,14 @@ class ManagementSystem
             end
     end
 
+    def formGroups
+        puts "Enter how many students per group:"
+        numStudents = gets.chomp.to_i
+        puts @studentArray.length
+        numGroups = @studentArray.length / numStudents
+        puts "The number of groups is: #{numGroups}"
+    end
+
 end
 
 cm = ManagementSystem.new
@@ -149,3 +168,36 @@ cm.userMenu
 # end
 # puts "#{data[0]["first_name"]}"
 
+
+
+# File.write("test.txt", @studentArray.map(&:to_csv).join)
+
+
+# when "3"
+#     puts "Enter the number of the email of you would like to edit:"
+#     studentNumber = gets.chomp.to_i
+#     puts "Enter first_name:"
+#     first_name = gets.chomp
+#     @studentArray[studentNumber][0] = first_name
+#     puts "Enter last_name:"
+#     last_name = gets.chomp
+#     @studentArray[studentNumber][1] = last_name
+#     puts "Enter email:"
+#     email = gets.chomp
+#     @studentArray[studentNumber][2] = email
+#     puts "Enter section:"
+#     section = gets.chomp
+#     @studentArray[studentNumber][3] = section
+#     puts "Enter major1:"
+#     major1 = gets.chomp
+#     @studentArray[studentNumber][4] = major1
+#     puts "Enter major2:"
+#     major2 = gets.chomp
+#     @studentArray[studentNumber][5] = major2
+#     puts "Enter minor1:"
+#     minor1 = gets.chomp
+#     @studentArray[studentNumber][6] = minor1
+#     puts "Enter minor2:"
+#     minor2 = gets.chomp
+#     @studentArray[studentNumber][7] = minor2
+#     userMenu
