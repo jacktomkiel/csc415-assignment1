@@ -1,0 +1,4 @@
+Bob,Jones,bobjones@gmail.com,section1,ece,finance,spanish,economics
+Sally,Smith,sallys@hotmail.com,section2,math, , , 
+Pedro,Diaz,pdiaz@yahoo.com,section1,english, ,science, 
+Andrew,Anders,aatom@gmail.com,section2,economics, , , 
