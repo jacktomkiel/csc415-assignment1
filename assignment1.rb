@@ -5,6 +5,7 @@ class ManagementSystem
 
     def initialize
         @studentArray = []
+        @groupArray = []
         @selectedFile = ""
         @dash = "-"*40
     end
@@ -106,45 +107,55 @@ class ManagementSystem
                 end
                 userMenu
             when "3"
-                puts "Enter the number of the email of you would like to edit:"
-                studentNumber = gets.chomp.to_i
-                puts "Enter first_name:"
-                first_name = gets.chomp
-                @studentArray[studentNumber][0] = first_name
-                puts "Enter last_name:"
-                last_name = gets.chomp
-                @studentArray[studentNumber][1] = last_name
-                puts "Enter email:"
-                email = gets.chomp
-                @studentArray[studentNumber][2] = email
-                puts "Enter section:"
-                section = gets.chomp
-                @studentArray[studentNumber][3] = section
-                puts "Enter major1:"
-                major1 = gets.chomp
-                @studentArray[studentNumber][4] = major1
-                puts "Enter major2:"
-                major2 = gets.chomp
-                @studentArray[studentNumber][5] = major2
-                puts "Enter minor1:"
-                minor1 = gets.chomp
-                @studentArray[studentNumber][6] = minor1
-                puts "Enter minor2:"
-                minor2 = gets.chomp
-                @studentArray[studentNumber][7] = minor2
-                userMenu
-            else
-                puts @dash+"error-invalid-selection"+@dash
-                userMenu
+                puts "Enter the email of the student you would like to edit:"
+                studentEmail = gets.chomp
+                studentFound = false
+                for i in 0..@studentArray.length-1
+                    if @studentArray[i][2] == studentEmail
+                        studentFound = true
+                        puts "Enter first_name: (required)"
+                        first_name = gets.chomp
+                        @studentArray[i][0] = first_name
+                        puts "Enter last_name: (required)"
+                        last_name = gets.chomp
+                        @studentArray[i][1] = last_name
+                        puts "Enter email: (required)"
+                        email = gets.chomp
+                        @studentArray[i][2] = email
+                        puts "Enter section: (required)"
+                        section = gets.chomp
+                        @studentArray[i][3] = section
+                        puts "Enter major1: (required)"
+                        major1 = gets.chomp
+                        @studentArray[i][4] = major1
+                        puts "Enter major2:"
+                        major2 = gets.chomp
+                        @studentArray[i][5] = major2
+                        puts "Enter minor1:"
+                        minor1 = gets.chomp
+                        @studentArray[i][6] = minor1
+                        puts "Enter minor2:"
+                        minor2 = gets.chomp
+                        @studentArray[i][7] = minor2
+                        puts @dash+"Student edited"+@dash
+                    end
+                end
+                if !studentFound
+                    puts @dash+"student-not-found"+@dash
+                end
+                userMenu     
             end
     end
 
     def formGroups
-        puts "Enter how many students per group:"
-        numStudents = gets.chomp.to_i
-        puts @studentArray.length
-        numGroups = @studentArray.length / numStudents
-        puts "The number of groups is: #{numGroups}"
+        puts "Enter the desired number of groups"
+        num_groups = gets.chomp.to_i
+            if num_groups > @studentArray.length || num_groups <=0
+            puts "Error, returning to menu..."
+            userMenu
+            end
+        @groupArray = ["group 1", @studentArray]
+        puts @groupArray
     end
 
 end
