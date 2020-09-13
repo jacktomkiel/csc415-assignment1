@@ -4,211 +4,179 @@ require 'csv'
 class ManagementSystem
 
     def initialize
-        @studentArray = []
-        @groupArray = []
-        @selectedFile = ""
+        @student_array = []
+        @group_array = []
+        @selected_file = ""
         @dash = "-"*40
     end
 
-    def userMenu
-            puts "Welcome to the course management system!"
-            puts "1-input data from file"
-            puts "2-edit data"
-            puts "3-form groups"
-            puts "4-list groups"
-            puts "5-write groups to file"
-            puts "6-view course information"
-            puts "0-exit the program"  
-            userSelection = gets.chomp
-                case userSelection
+    def user_menu
+        puts "1-input data from file"
+        puts "2-edit data"
+        puts "3-form groups"
+        puts "4-list groups"
+        puts "5-write groups to file"
+        puts "6-view course information"
+        puts "0-exit the program"  
+        user_selection = gets.chomp
+            case user_selection
                 when "0"
                     abort
                 when "1"
-                    inputData
+                    input_data
                 when "2"
-                    editData
+                    edit_data
                 when "3"
-                    formGroups
+                    form_groups
                 when "4"
                     # do this
                 when "5"
-                    # do this
+                    File.write("groups.csv", @group_array.map(&:to_csv).join)
                 when "6"
-                    listCourseInfo
+                    list_course_info
                 else
                     puts @dash+"error-invalid-selection"+@dash
-                    userMenu
-                end
+                    user_menu
+            end
     end
 
-    def inputData
+    def input_data
         puts "Enter the name of the file that you wish to read:"
-        @selectedFile = gets.chomp
-        puts "The file to be read is \"#{@selectedFile}\" (y/n)?"
-        temp = gets.chomp
-        if  temp == "y"
-            @studentArray = CSV.read("#{@selectedFile}", :headers => true)
+            @selected_file = gets.chomp
+        puts "The file to be read is \"#{@selected_file}\" (y/n)?"
+        user_input = gets.chomp
+        if  user_input == "y"
+            @student_array = CSV.read("#{@selected_file}", headers: true, header_converters: :symbol, :converters => :all).map(&:to_h)
             puts "File Loaded...Returning to menu"
-            userMenu
+            user_menu
         else
             puts "Returning to menu..."
-            userMenu
+            user_menu
         end
     end
 
-    def listCourseInfo
-        puts "There are #{@studentArray.length} students in this course"
+    def list_course_info
+        puts "There are #{@student_array.length} students in this course"
         puts "The Course roster is listed below"
-        puts @studentArray
+        puts @student_array
         puts "Press 'enter' to return to menu"
         temp = gets.chomp
-        userMenu
+        user_menu
     end
 
-    def editData
-        puts "1-add student"
-        puts "2-delete student"
-        puts "3-edit student data"
-        userSelection = gets.chomp
-            case userSelection
-            when "1"
-                puts "Enter first_name:"
-                first_name = gets.chomp
-                puts "Enter last_name:"
-                last_name = gets.chomp
-                puts "Enter email:"
-                email = gets.chomp
-                puts "Enter section:"
-                section = gets.chomp
-                puts "Enter major1:"
-                major1 = gets.chomp
-                puts "Enter major2:"
-                major2 = gets.chomp
-                puts "Enter minor1:"
-                minor1 = gets.chomp
-                puts "Enter minor2:"
-                minor2 = gets.chomp
-                @studentArray.push([first_name,last_name,email,section,major1,major2,minor1,minor2])
-                userMenu
-            when "2"
-                puts "Enter the email of the student you would like to remove:"
-                studentEmail = gets.chomp
-                studentFound = false
-                puts @studentArray.length
-                for i in 0..@studentArray.length-1
-                    if @studentArray[i][2] == studentEmail
-                        studentFound = true
-                        @studentArray.delete(i)
-                        puts "Student removed"
-                    end
+    def add_student
+        puts "Enter first_name:"
+        first_name = gets.chomp
+        puts "Enter last_name:"
+        last_name = gets.chomp
+        puts "Enter email:"
+        email = gets.chomp
+        puts "Enter section:"
+        section = gets.chomp
+        puts "Enter major1:"
+        major1 = gets.chomp
+        puts "Enter major2:"
+        major2 = gets.chomp
+        puts "Enter minor1:"
+        minor1 = gets.chomp
+        puts "Enter minor2:"
+        minor2 = gets.chomp
+        @student_array.push({:first_name=>first_name, :last_name=>last_name, :email=>email, :section=>section, :major1=>major1, :major2=>major2, :minor1=>minor1, :minor2=>minor2})
+        user_menu
+    end
+
+    def delete_student
+        puts "Enter the email of the student you would like to remove:"
+        student_email = gets.chomp
+        student_found = false
+            for i in 0..@student_array.length()-1
+                if @student_array[i][:email] == student_email
+                    student_found = true
+                    @student_array.delete_at(i)
+                    puts "Student removed"
+                    break
                 end
-                if !studentFound
-                    puts "Student not found"
-                end
-                userMenu
-            when "3"
-                puts "Enter the email of the student you would like to edit:"
-                studentEmail = gets.chomp
-                studentFound = false
-                for i in 0..@studentArray.length-1
-                    if @studentArray[i][2] == studentEmail
-                        studentFound = true
+            end
+            if !student_found
+                puts "Student not found"
+            end
+        user_menu
+    end
+
+    def edit_student_data
+        puts "Enter the email of the student you would like to edit:"
+            student_email = gets.chomp
+            student_found = false
+                for i in 0..@student_array.length-1
+                    if @student_array[i][:email] == student_email
+                        student_found = true
                         puts "Enter first_name: (required)"
                         first_name = gets.chomp
-                        @studentArray[i][0] = first_name
+                        @student_array[i][:first_name] = first_name
                         puts "Enter last_name: (required)"
                         last_name = gets.chomp
-                        @studentArray[i][1] = last_name
+                        @student_array[i][:last_name] = last_name
                         puts "Enter email: (required)"
                         email = gets.chomp
-                        @studentArray[i][2] = email
+                        @student_array[i][:email] = email
                         puts "Enter section: (required)"
                         section = gets.chomp
-                        @studentArray[i][3] = section
+                        @student_array[i][:section] = section
                         puts "Enter major1: (required)"
                         major1 = gets.chomp
-                        @studentArray[i][4] = major1
+                        @student_array[i][:major1] = major1
                         puts "Enter major2:"
                         major2 = gets.chomp
-                        @studentArray[i][5] = major2
+                        @student_array[i][:major2] = major2
                         puts "Enter minor1:"
                         minor1 = gets.chomp
-                        @studentArray[i][6] = minor1
+                        @student_array[i][:minor1] = minor1
                         puts "Enter minor2:"
                         minor2 = gets.chomp
-                        @studentArray[i][7] = minor2
+                        @student_array[i][:minor2] = minor2
                         puts @dash+"Student edited"+@dash
                     end
                 end
-                if !studentFound
-                    puts @dash+"student-not-found"+@dash
-                end
-                userMenu     
+            if !student_found
+                puts @dash+"student-not-found"+@dash
+            end
+        user_menu  
+    end
+
+    def edit_data
+        puts "1-add student"
+        puts "2-delete student"
+        puts "3-edit student data"
+        user_selection = gets.chomp
+            case user_selection
+            when "1"
+                add_student
+            when "2"
+                delete_student
+            when "3"
+                edit_student_data
             end
     end
 
-    def formGroups
-        puts "Enter the desired number of groups"
-        num_groups = gets.chomp.to_i
-            if num_groups > @studentArray.length || num_groups <=0
-            puts "Error, returning to menu..."
-            userMenu
-            end
-        @groupArray = ["group 1", @studentArray]
-        puts @groupArray
+    def form_groups
+        
     end
 
 end
 
-cm = ManagementSystem.new
-cm.userMenu
+puts "Welcome to the course management system!"
+run = ManagementSystem.new
+    run.user_menu
+    
 
 
 
 
-# CSV.foreach("textfile.txt", headers: true) do |row|
-#     puts row.inspect # hash
-#   end
-
-# CSV.parse("textfile.txt", headers: true).map(&:to_h)
-
-# data_file = 'textfile.txt'
-# data = []
-# CSV.foreach(data_file, headers: true) do |row|
-#   data << row.to_hash
-# end
-# puts "#{data[0]["first_name"]}"
 
 
 
-# File.write("test.txt", @studentArray.map(&:to_csv).join)
 
 
-# when "3"
-#     puts "Enter the number of the email of you would like to edit:"
-#     studentNumber = gets.chomp.to_i
-#     puts "Enter first_name:"
-#     first_name = gets.chomp
-#     @studentArray[studentNumber][0] = first_name
-#     puts "Enter last_name:"
-#     last_name = gets.chomp
-#     @studentArray[studentNumber][1] = last_name
-#     puts "Enter email:"
-#     email = gets.chomp
-#     @studentArray[studentNumber][2] = email
-#     puts "Enter section:"
-#     section = gets.chomp
-#     @studentArray[studentNumber][3] = section
-#     puts "Enter major1:"
-#     major1 = gets.chomp
-#     @studentArray[studentNumber][4] = major1
-#     puts "Enter major2:"
-#     major2 = gets.chomp
-#     @studentArray[studentNumber][5] = major2
-#     puts "Enter minor1:"
-#     minor1 = gets.chomp
-#     @studentArray[studentNumber][6] = minor1
-#     puts "Enter minor2:"
-#     minor2 = gets.chomp
-#     @studentArray[studentNumber][7] = minor2
-#     userMenu
+
+
+
