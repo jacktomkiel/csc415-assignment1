@@ -31,7 +31,7 @@ class ManagementSystem
                 when "4"
                     # do this
                 when "5"
-                    File.write("groups.csv", @group_array.map(&:to_csv).join)
+                    File.write("groups_array.csv", @group_array.map(&:to_csv).join)
                 when "6"
                     list_course_info
                 else
@@ -62,6 +62,14 @@ class ManagementSystem
         puts "Press 'enter' to return to menu"
         temp = gets.chomp
         user_menu
+    end
+
+    def list_groups
+        @group_array.each do |group|
+            group.each do |student|
+                puts student[:first_name]
+            end
+        end
     end
 
     def add_student
@@ -159,8 +167,27 @@ class ManagementSystem
     end
 
     def form_groups
-        
+        puts "Groups will be formed by section."
+        puts "Enter the number of groups you wish to form: "
+        num_groups = gets.chomp.to_i
+        @group_array = @student_array.each_slice(num_groups).to_a
+        user_menu
     end
+
+    def bubble_sort_section(array)
+        n = array.length
+        swapped = true
+        while swapped do
+          swapped = false
+          (n - 1).times do |i|
+            if array[i][:section] > array[i + 1][:section]
+              array[i], array[i + 1] = array[i + 1], array[i]
+          swapped = true
+            end
+          end
+        end
+        array 
+     end
 
 end
 
