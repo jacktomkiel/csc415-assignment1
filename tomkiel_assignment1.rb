@@ -59,6 +59,7 @@ class ManagementSystem
                                 csv << group
                             end
                         end
+                        user_menu
                     else
                         puts @dash+"error-file-not-loaded"+@dash
                         user_menu
