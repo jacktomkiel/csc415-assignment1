@@ -3,7 +3,7 @@ require 'csv'
 
 class ManagementSystem
 
-    # initializing class variables
+    # initializing instance variables
     def initialize
         @student_array = []
         @file_loaded = false
@@ -86,7 +86,7 @@ class ManagementSystem
         if  user_input == "y"
             begin
             # Using CSV class, the selected file is read into @students_array as an array of hashes. Appropriate converters are used to handle optional fields
-            @student_array = CSV.read("#{selected_file}", headers: true, header_converters: :symbol, :converters => :all, nil_value: "").map(&:to_h)
+            @student_array = CSV.read(selected_file, headers: true, header_converters: :symbol, :converters => :all).map(&:to_hash)
             puts "File Loaded...Returning to menu"
             @file_loaded = true
             user_menu
@@ -94,7 +94,6 @@ class ManagementSystem
                 # if the file is not found, and code produces an exception, it is caught, an error is printed, and user returns to menu
                 puts @dash+"error-file-not-found"+@dash
             end
-            user_menu
         # If user selects 'n' this returns the user to the main user menu
         else
             puts "Returning to menu..."
@@ -111,8 +110,8 @@ class ManagementSystem
         @student_array.each do |student|
                 puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
                 student[:email].ljust(35) + student[:section].to_s.ljust(10) +
-                student[:major1].ljust(35) + student[:major2].ljust(35) +
-                student[:minor1].ljust(35) + student[:minor2].ljust(35)
+                student[:major1].ljust(35) + student[:major2].to_s.ljust(35) +
+                student[:minor1].to_s.ljust(35) + student[:minor2].to_s.ljust(35)
         end
             # in case of extremely large file, prints course information at bottom of file so need not scroll up
             if @student_array.length > 40
@@ -133,8 +132,8 @@ class ManagementSystem
             group.each do |student|
                 puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
                 student[:email].ljust(35) + student[:section].to_s.ljust(10) +
-                student[:major1].ljust(35) + student[:major2].ljust(35) +
-                student[:minor1].ljust(35) + student[:minor2].ljust(35)
+                student[:major1].ljust(35) + student[:major2].to_s.ljust(35).to_s +
+                student[:minor1].to_s.ljust(35) + student[:minor2].to_s.ljust(35)
             end
         end
         # Prompts the user to return to menu
