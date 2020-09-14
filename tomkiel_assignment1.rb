@@ -88,6 +88,7 @@ class ManagementSystem
             rescue
                 # if the file is not found, and code produces an exception, it is caught, an error is printed, and user returns to menu
                 puts @dash+"error-file-not-found"+@dash
+                user_menu
             end
         # If user selects 'n' this returns the user to the main user menu
         else
