@@ -8,6 +8,7 @@ class ManagementSystem
         @group_array = []
         @selected_file = ""
         @dash = "-"*40
+        @HEADERS = ['first_name','last_name','email','section','major1','major2','minor1','minor2']
     end
 
     def user_menu
@@ -29,9 +30,16 @@ class ManagementSystem
                 when "3"
                     form_groups
                 when "4"
-                    # do this
+                    list_groups
                 when "5"
+                    CSV.open("groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
+                        @group_array.each do |group|
+                            csv << group
+                        end
+                    end
                     File.write("groups_array.csv", @group_array.map(&:to_csv).join)
+                    puts @group_array.inspect
+                    user_menu
                 when "6"
                     list_course_info
                 else
@@ -46,7 +54,7 @@ class ManagementSystem
         puts "The file to be read is \"#{@selected_file}\" (y/n)?"
         user_input = gets.chomp
         if  user_input == "y"
-            @student_array = CSV.read("#{@selected_file}", headers: true, header_converters: :symbol, :converters => :all).map(&:to_h)
+            @student_array = CSV.read("#{@selected_file}", headers: true, header_converters: :symbol, :converters => :all, nil_value: "").map(&:to_h)
             puts "File Loaded...Returning to menu"
             user_menu
         else
@@ -58,18 +66,40 @@ class ManagementSystem
     def list_course_info
         puts "There are #{@student_array.length} students in this course"
         puts "The Course roster is listed below"
-        puts @student_array
+        puts "First Name".ljust(35) + "Last Name".ljust(35) + "Email".ljust(35) +
+            "Section".ljust(35) + "Major 1".ljust(35) + "Major 2".ljust(35) +
+            "Minor 1".ljust(35) + "Minor 2".ljust(35)
+        @student_array.each do |student|
+                puts student[:first_name].ljust(35) + student[:last_name].ljust(35) +
+                student[:email].ljust(35) + student[:section].to_s.ljust(35) +
+                student[:major1].ljust(35) + student[:major2].ljust(35) +
+                student[:minor1].ljust(35) + student[:minor2].ljust(35)
+        end
+            if @student_array.length > 40
+                puts "The Course roster is listed above"
+                puts "There are #{@student_array.length} students in this course"
+            end
         puts "Press 'enter' to return to menu"
         temp = gets.chomp
         user_menu
     end
 
     def list_groups
-        @group_array.each do |group|
+        @group_array.each_with_index do |group, index|
+            puts "Group " + (index + 1).to_s
+            puts "First Name".ljust(35) + "Last Name".ljust(35) + "Email".ljust(35) +
+            "Section".ljust(35) + "Major 1".ljust(35) + "Major 2".ljust(35) +
+            "Minor 1".ljust(35) + "Minor 2".ljust(35)
             group.each do |student|
-                puts student[:first_name]
+                puts student[:first_name].ljust(35) + student[:last_name].ljust(35) +
+                student[:email].ljust(35) + student[:section].to_s.ljust(35) +
+                student[:major1].ljust(35) + student[:major2].ljust(35) +
+                student[:minor1].ljust(35) + student[:minor2].ljust(35)
             end
         end
+        puts "Press 'enter' to return to menu"
+        temp = gets.chomp
+        user_menu
     end
 
     def add_student
@@ -167,10 +197,14 @@ class ManagementSystem
     end
 
     def form_groups
-        puts "Groups will be formed by section."
-        puts "Enter the number of groups you wish to form: "
+        puts "Groups will be formed by section. The student list will be permanantly sorted."
+        puts "Enter the number of students per group: "
         num_groups = gets.chomp.to_i
+        @student_array = bubble_sort_section(@student_array)
         @group_array = @student_array.each_slice(num_groups).to_a
+        puts "There are #{@group_array.length} groups"
+        puts "Press 'enter' to return to menu"
+        temp = gets.chomp
         user_menu
     end
 
