@@ -3,14 +3,17 @@ require 'csv'
 
 class ManagementSystem
 
+    # initializing class variables
     def initialize
         @student_array = []
+        @file_loaded = false
         @group_array = []
         @selected_file = ""
         @dash = "-"*40
         @HEADERS = ['first_name','last_name','email','section','major1','major2','minor1','minor2']
     end
 
+    # displays the main user menu used in this program
     def user_menu
         puts "1-input data from file"
         puts "2-edit data"
@@ -20,58 +23,90 @@ class ManagementSystem
         puts "6-view course information"
         puts "0-exit the program"  
         user_selection = gets.chomp
+            # case statement calls respective methods based on user's selection
             case user_selection
                 when "0"
                     abort
                 when "1"
                     input_data
                 when "2"
-                    edit_data
+                    if @file_loaded
+                        edit_data
+                    else
+                        puts @dash+"error-file-not-loaded"+@dash
+                        user_menu
+                    end 
                 when "3"
-                    form_groups
+                    if @file_loaded
+                        form_groups
+                    else
+                        puts @dash+"error-file-not-loaded"+@dash
+                        user_menu
+                    end 
                 when "4"
-                    list_groups
+                    if @file_loaded
+                        list_groups
+                    else
+                        puts @dash+"error-file-not-loaded"+@dash
+                        user_menu
+                    end 
                 when "5"
-                    CSV.open("groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
-                        @group_array.each do |group|
-                            csv << group
+                    if @file_loaded
+                        # writes group data to file using built in CSV methods
+                        CSV.open("groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
+                            @group_array.each do |group|
+                                csv << group
+                            end
                         end
-                    end
-                    File.write("groups_array.csv", @group_array.map(&:to_csv).join)
-                    puts @group_array.inspect
-                    user_menu
+                        File.write("groups_array.csv", @group_array.map(&:to_csv).join)
+                        puts @group_array.inspect
+                        user_menu
+                    else
+                        puts @dash+"error-file-not-loaded"+@dash
+                        user_menu
+                    end 
                 when "6"
-                    list_course_info
+                    if @file_loaded
+                        list_course_info
+                    else
+                        puts @dash+"error-file-not-loaded"+@dash
+                        user_menu
+                    end 
                 else
                     puts @dash+"error-invalid-selection"+@dash
                     user_menu
             end
     end
 
+    # prompts user for the file they would like to input, loads file into @student_array as an array of hashes
     def input_data
         puts "Enter the name of the file that you wish to read:"
             @selected_file = gets.chomp
         puts "The file to be read is \"#{@selected_file}\" (y/n)?"
         user_input = gets.chomp
+        # checking to make sure user is loading the correct file
         if  user_input == "y"
             @student_array = CSV.read("#{@selected_file}", headers: true, header_converters: :symbol, :converters => :all, nil_value: "").map(&:to_h)
             puts "File Loaded...Returning to menu"
+            @file_loaded = true
             user_menu
+        # if user selects 'n' this returns the user to the main user menu
         else
             puts "Returning to menu..."
             user_menu
         end
     end
 
+    # lists the current course information
     def list_course_info
         puts "There are #{@student_array.length} students in this course"
         puts "The Course roster is listed below"
-        puts "First Name".ljust(35) + "Last Name".ljust(35) + "Email".ljust(35) +
-            "Section".ljust(35) + "Major 1".ljust(35) + "Major 2".ljust(35) +
-            "Minor 1".ljust(35) + "Minor 2".ljust(35)
+        puts "First Name".ljust(20) + "Last Name".ljust(20) + "Email".ljust(35) +
+            "Section".ljust(10) + "Major 1".ljust(35) + "Major 2 (optional)".ljust(35) +
+            "Minor 1 (optional)".ljust(35) + "Minor 2 (optional)".ljust(35)
         @student_array.each do |student|
-                puts student[:first_name].ljust(35) + student[:last_name].ljust(35) +
-                student[:email].ljust(35) + student[:section].to_s.ljust(35) +
+                puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
+                student[:email].ljust(35) + student[:section].to_s.ljust(10) +
                 student[:major1].ljust(35) + student[:major2].ljust(35) +
                 student[:minor1].ljust(35) + student[:minor2].ljust(35)
         end
@@ -87,12 +122,12 @@ class ManagementSystem
     def list_groups
         @group_array.each_with_index do |group, index|
             puts "Group " + (index + 1).to_s
-            puts "First Name".ljust(35) + "Last Name".ljust(35) + "Email".ljust(35) +
-            "Section".ljust(35) + "Major 1".ljust(35) + "Major 2".ljust(35) +
-            "Minor 1".ljust(35) + "Minor 2".ljust(35)
+            puts "First Name".ljust(20) + "Last Name".ljust(20) + "Email".ljust(35) +
+            "Section".ljust(10) + "Major 1".ljust(35) + "Major 2 (optional)".ljust(35) +
+            "Minor 1 (optional)".ljust(35) + "Minor 2 (optional)".ljust(35)
             group.each do |student|
-                puts student[:first_name].ljust(35) + student[:last_name].ljust(35) +
-                student[:email].ljust(35) + student[:section].to_s.ljust(35) +
+                puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
+                student[:email].ljust(35) + student[:section].to_s.ljust(10) +
                 student[:major1].ljust(35) + student[:major2].ljust(35) +
                 student[:minor1].ljust(35) + student[:minor2].ljust(35)
             end
@@ -197,15 +232,34 @@ class ManagementSystem
     end
 
     def form_groups
-        puts "Groups will be formed by section. The student list will be permanantly sorted."
-        puts "Enter the number of students per group: "
-        num_groups = gets.chomp.to_i
-        @student_array = bubble_sort_section(@student_array)
-        @group_array = @student_array.each_slice(num_groups).to_a
-        puts "There are #{@group_array.length} groups"
-        puts "Press 'enter' to return to menu"
-        temp = gets.chomp
-        user_menu
+        puts "Enter how you would like groups to sorted, then choose the number of students in each group"
+            puts "1-sort groups randomly"
+            puts "2-sort groups by section"
+            user_selection = gets.chomp.to_i
+                if user_selection == 1
+                    puts "Groups will be formed randomly and the student list will be permanantly sorted."
+                    puts "Enter the number of students per group: "
+                    num_groups = gets.chomp.to_i
+                    @student_array = @student_array.shuffle
+                    @group_array = @student_array.each_slice(num_groups).to_a
+                    puts "There are #{@group_array.length} groups"
+                    puts "Press 'enter' to return to menu"
+                    temp = gets.chomp
+                    user_menu
+                elsif user_selection == 2
+                    puts "Groups will be formed by section and the student list will be permanantly sorted."
+                    puts "Enter the number of students per group: "
+                    num_groups = gets.chomp.to_i
+                    @student_array = bubble_sort_section(@student_array)
+                    @group_array = @student_array.each_slice(num_groups).to_a
+                    puts "There are #{@group_array.length} groups"
+                    puts "Press 'enter' to return to menu"
+                    temp = gets.chomp
+                    user_menu
+                else
+                    puts @dash+"error-invalid-selection"+@dash
+                    user_menu
+                end
     end
 
     def bubble_sort_section(array)

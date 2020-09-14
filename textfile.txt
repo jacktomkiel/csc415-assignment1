@@ -1,5 +1,5 @@
 first_name,last_name,email,section,major1,major2,minor1,minor2
-Bob,Jones,bobjones@gmail.com,section1,ece,finance,spanish,economics
-Sally,Smith,sallys@hotmail.com,section2,math, , , 
-Pedro,Diaz,pdiaz@yahoo.com,section1,english, ,science, 
-Andrew,Anders,aatom@gmail.com,section2,economics, , , 
+Bob,Jones,bobjones@gmail.com,1,ece,finance,spanish,economics
+Sally,Smith,sallys@hotmail.com,2,math, , ,
+Pedro,Diaz,pdiaz@yahoo.com,1,english, ,science,
+Andrew,Anders,aatom@gmail.com,2,economics, , ,
