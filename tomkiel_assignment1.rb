@@ -53,13 +53,7 @@ class ManagementSystem
                     end 
                 when "5"
                     if @file_loaded
-                        # writes group data to file using built in CSV methods, puts hash keys as file header
-                        CSV.open("tomkiel_groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
-                            @group_array.each do |group|
-                                csv << group
-                            end
-                        end
-                        user_menu
+                        write_groups
                     else
                         puts @dash+"error-file-not-loaded"+@dash
                         user_menu
@@ -342,10 +336,23 @@ class ManagementSystem
                 puts "Press 'enter' to return to menu"
                 temp = gets.chomp
                 user_menu
-        else
+            else
                 puts @dash+"error-invalid-selection"+@dash
                 user_menu
             end
+    end
+
+    def write_groups
+        # writes group data to file using built in CSV methods, puts hash keys as file header
+        CSV.open("tomkiel_groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
+            @group_array.each do |group|
+                csv << group
+            end
+        end
+        puts "File saved"
+        puts "Press 'enter' to return to menu"
+        temp = gets.chomp
+        user_menu
     end
 
 end
