@@ -54,7 +54,7 @@ class ManagementSystem
                 when "5"
                     if @file_loaded
                         # writes group data to file using built in CSV methods, puts hash keys as file header
-                        CSV.open("groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
+                        CSV.open("tomkiel_groups_array.csv", "wb", :headers => @HEADERS, :write_headers => true) do |csv|
                             @group_array.each do |group|
                                 csv << group
                             end

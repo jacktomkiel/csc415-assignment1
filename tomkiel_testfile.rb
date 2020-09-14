@@ -114,12 +114,6 @@ end
 
 
 
-
-
-
-
-
-
 # working
 # for i in 0..data.length-1
 #     if data[i][2] == "Andrew"
