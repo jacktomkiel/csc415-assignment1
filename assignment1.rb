@@ -8,9 +8,9 @@ class ManagementSystem
         @student_array = []
         @file_loaded = false
         @group_array = []
-        @selected_file = ""
-        @dash = "-"*40
         @HEADERS = ['first_name','last_name','email','section','major1','major2','minor1','minor2']
+        @dash = "-"*40
+        @console_headers = "First Name".ljust(20) + "Last Name".ljust(20) + "Email".ljust(35) + "Section".ljust(10) + "Major 1".ljust(35) + "Major 2 (optional)".ljust(35) + "Minor 1 (optional)".ljust(35) + "Minor 2 (optional)".ljust(35)
     end
 
     # displays the main user menu used in this program
@@ -81,16 +81,21 @@ class ManagementSystem
     # prompts user for the file they would like to input, loads file into @student_array as an array of hashes
     def input_data
         puts "Enter the name of the file that you wish to read:"
-            @selected_file = gets.chomp
-        puts "The file to be read is \"#{@selected_file}\" (y/n)?"
+            selected_file = gets.chomp
+        puts "The file to be read is \"#{selected_file}\" (y/n)?"
         user_input = gets.chomp
-        # checking to make sure user is loading the correct file
+        # checking to make sure user is loading the correct file   
         if  user_input == "y"
-            @student_array = CSV.read("#{@selected_file}", headers: true, header_converters: :symbol, :converters => :all, nil_value: "").map(&:to_h)
+            begin
+            @student_array = CSV.read("#{selected_file}", headers: true, header_converters: :symbol, :converters => :all, nil_value: "").map(&:to_h)
             puts "File Loaded...Returning to menu"
             @file_loaded = true
             user_menu
-        # if user selects 'n' this returns the user to the main user menu
+            rescue
+                puts @dash+"error-file-not-found"+@dash
+            end
+            user_menu
+        # If user selects 'n' this returns the user to the main user menu
         else
             puts "Returning to menu..."
             user_menu
@@ -101,9 +106,7 @@ class ManagementSystem
     def list_course_info
         puts "There are #{@student_array.length} students in this course"
         puts "The Course roster is listed below"
-        puts "First Name".ljust(20) + "Last Name".ljust(20) + "Email".ljust(35) +
-            "Section".ljust(10) + "Major 1".ljust(35) + "Major 2 (optional)".ljust(35) +
-            "Minor 1 (optional)".ljust(35) + "Minor 2 (optional)".ljust(35)
+        puts @console_headers
         @student_array.each do |student|
                 puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
                 student[:email].ljust(35) + student[:section].to_s.ljust(10) +
@@ -122,9 +125,7 @@ class ManagementSystem
     def list_groups
         @group_array.each_with_index do |group, index|
             puts "Group " + (index + 1).to_s
-            puts "First Name".ljust(20) + "Last Name".ljust(20) + "Email".ljust(35) +
-            "Section".ljust(10) + "Major 1".ljust(35) + "Major 2 (optional)".ljust(35) +
-            "Minor 1 (optional)".ljust(35) + "Minor 2 (optional)".ljust(35)
+            puts @console_headers
             group.each do |student|
                 puts student[:first_name].ljust(20) + student[:last_name].ljust(20) +
                 student[:email].ljust(35) + student[:section].to_s.ljust(10) +
@@ -162,10 +163,10 @@ class ManagementSystem
         puts "Enter the email of the student you would like to remove:"
         student_email = gets.chomp
         student_found = false
-            for i in 0..@student_array.length()-1
-                if @student_array[i][:email] == student_email
+            @student_array.each_with_index do |student, index|
+                if @student_array[index][:email] == student_email
                     student_found = true
-                    @student_array.delete_at(i)
+                    @student_array.delete_at(index)
                     puts "Student removed"
                     break
                 end
@@ -173,40 +174,40 @@ class ManagementSystem
             if !student_found
                 puts "Student not found"
             end
-        user_menu
+            user_menu
     end
 
     def edit_student_data
         puts "Enter the email of the student you would like to edit:"
             student_email = gets.chomp
             student_found = false
-                for i in 0..@student_array.length-1
-                    if @student_array[i][:email] == student_email
+                @student_array.each_with_index do |student, index|
+                    if @student_array[index][:email] == student_email
                         student_found = true
                         puts "Enter first_name: (required)"
                         first_name = gets.chomp
-                        @student_array[i][:first_name] = first_name
+                        @student_array[index][:first_name] = first_name
                         puts "Enter last_name: (required)"
                         last_name = gets.chomp
-                        @student_array[i][:last_name] = last_name
+                        @student_array[index][:last_name] = last_name
                         puts "Enter email: (required)"
                         email = gets.chomp
-                        @student_array[i][:email] = email
+                        @student_array[index][:email] = email
                         puts "Enter section: (required)"
                         section = gets.chomp
-                        @student_array[i][:section] = section
+                        @student_array[index][:section] = section
                         puts "Enter major1: (required)"
                         major1 = gets.chomp
-                        @student_array[i][:major1] = major1
+                        @student_array[index][:major1] = major1
                         puts "Enter major2:"
                         major2 = gets.chomp
-                        @student_array[i][:major2] = major2
+                        @student_array[index][:major2] = major2
                         puts "Enter minor1:"
                         minor1 = gets.chomp
-                        @student_array[i][:minor1] = minor1
+                        @student_array[index][:minor1] = minor1
                         puts "Enter minor2:"
                         minor2 = gets.chomp
-                        @student_array[i][:minor2] = minor2
+                        @student_array[index][:minor2] = minor2
                         puts @dash+"Student edited"+@dash
                     end
                 end
@@ -228,6 +229,9 @@ class ManagementSystem
                 delete_student
             when "3"
                 edit_student_data
+            else
+                puts @dash+"error-invalid-selection"+@dash
+                user_menu
             end
     end
 
